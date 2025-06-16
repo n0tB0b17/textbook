@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alpha.textbook.dto.User.CreateUserRequest;
 import com.alpha.textbook.dto.User.UserResponse;
+import com.alpha.textbook.service.UserService;
 
 import jakarta.validation.Valid;
 
@@ -21,15 +22,16 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/users")
 public class UserController {
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity<UserResponse> registerUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
         logger.info("registering in user: {} to our server", createUserRequest.getUsername());
-        UserResponse userResponse = new UserResponse();
-        userResponse.setUsername(createUserRequest.getUsername());
-        userResponse.setEmail(createUserRequest.getEmail());
-        userResponse.setContactNumber(createUserRequest.getContactNumber());
-        userResponse.setAddress(createUserRequest.getAddress());
+        UserResponse userResponse = userService.registerUser(createUserRequest);
         return ResponseEntity.ok(userResponse);
     }
 
