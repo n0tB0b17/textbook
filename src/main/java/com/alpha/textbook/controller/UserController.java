@@ -1,5 +1,6 @@
 package com.alpha.textbook.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -23,12 +24,18 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse> registerUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
-        logger.debug("registering in user: {} to our server", createUserRequest.getUsername());
-        return null;
+        logger.info("registering in user: {} to our server", createUserRequest.getUsername());
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUsername(createUserRequest.getUsername());
+        userResponse.setEmail(createUserRequest.getEmail());
+        userResponse.setContactNumber(createUserRequest.getContactNumber());
+        userResponse.setAddress(createUserRequest.getAddress());
+        return ResponseEntity.ok(userResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
-        return null;
+        List<UserResponse> userResponses = new ArrayList<UserResponse>();
+        return ResponseEntity.ok(userResponses);
     }
 }
