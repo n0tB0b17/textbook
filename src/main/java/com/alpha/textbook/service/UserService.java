@@ -24,7 +24,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private static final int DEFAULT_PAGE_SIZE = 20;
+    // private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int MAX_PAGE_SIZE = 100;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -61,6 +61,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Page<UserResponse> getUsers(int page, int size, String sortBy, String sortDirection) {
+        logger.debug("Running getUser function");
         int validatePage = Math.max(0, page);
         int validateSize = Math.min(Math.max(1, size), MAX_PAGE_SIZE);
 
@@ -69,7 +70,8 @@ public class UserService {
                 : Sort.Direction.ASC;
 
         Pageable pageable = PageRequest.of(validatePage, validateSize, Sort.by(direction, validateSortField(sortBy)));
-        return null;
+        Page<User> users = userRepository.findAll(pageable);
+        return users.map(this::mapUserToResponse);
     }
 
     @Transactional(readOnly = true)
@@ -78,7 +80,8 @@ public class UserService {
         int validateSize = Math.min(Math.max(1, size), MAX_PAGE_SIZE);
 
         Pageable pageable = PageRequest.of(validatePage, validateSize, Sort.by(Sort.Direction.ASC, "username"));
-        return null;
+        Page<User> user = userRepository.findByUsernameContainingIgnoreCase(name, pageable);
+        return user.map(this::mapUserToResponse);
     }
 
     private String validateSortField(String sortBy) {
