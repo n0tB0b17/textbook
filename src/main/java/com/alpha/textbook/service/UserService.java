@@ -84,6 +84,28 @@ public class UserService {
         return user.map(this::mapUserToResponse);
     }
 
+    @Transactional(readOnly = true)
+    public Page<UserResponse> getUsersByJoinedDateRange(LocalDateTime startDate, LocalDateTime endDate, int page,
+            int size) {
+        int validatePage = Math.max(0, page);
+        int validateSize = Math.min(Math.max(1, size), MAX_PAGE_SIZE);
+
+        Pageable pageable = PageRequest.of(validatePage, validateSize, Sort.by(Sort.Direction.ASC, "joinedAt"));
+        Page<User> users = userRepository.findByJoinedAtBetween(startDate, endDate, pageable);
+        return users.map(this::mapUserToResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserResponse> getRecentlyActiveUser(int date, int page, int size) {
+        LocalDateTime cutOffTime = LocalDateTime.now().minusDays(date);
+        int validatePage = Math.max(0, page);
+        int validateSize = Math.min(Math.max(1, size), MAX_PAGE_SIZE);
+
+        Pageable pageable = PageRequest.of(validatePage, validateSize, Sort.by(Sort.Direction.ASC, "lastLoginAt"));
+        Page<User> users = userRepository.findByLastLoginAtAfter(cutOffTime, pageable);
+        return users.map(this::mapUserToResponse);
+    }
+
     private String validateSortField(String sortBy) {
         Set<String> allowedSortFields = Set.of(
                 "username", "email", "contactNumber", "joinedAt", "lastLoginAt");
