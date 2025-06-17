@@ -33,4 +33,17 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT.value());
         return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(LocationAlreadyExistsException.class)
+    public ResponseEntity<ErrorDetail> handleLocationAlreadyExists(
+            LocationAlreadyExistsException ex,
+            WebRequest req) {
+        ErrorDetail errorDetail = new ErrorDetail(
+                LocalDateTime.now(),
+                ex.getMessage(),
+                req.getDescription(false),
+                HttpStatus.CONFLICT.value());
+
+        return new ResponseEntity<>(errorDetail, HttpStatus.CONFLICT);
+    }
 }
